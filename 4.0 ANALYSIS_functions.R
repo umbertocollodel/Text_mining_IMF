@@ -476,42 +476,6 @@ get_intensity=function(mydata,shocks,lowerbound=0,path=NULL){
   }
 }
 
-
-
-
-get_share_priority= function()
-  
-  cond_mean=function(x){
-    mean(ifelse(x<=lowerbound,NA,x),na.rm=T)
-  }
-
-dt=mydata %>% 
-  dplyr::select(year,ISO3_Code,shocks) %>%
-  group_by(ISO3_Code, year)%>%
-  filter(year>=1960) %>%
-  gather("shock","value", Soft_recession:Social_crisis) %>% 
-  group_by(year, ISO3_Code) %>% 
-  mutate(max = max(value, na.rm = T)) %>% 
-  mutate(value = case_when(value == max & value != 0 ~ 1,
-                           TRUE ~ 0))
-
-list = dt %>% 
-split(dt$shock) %>% 
-  map(~ .x %>% group_by(year) %>% summarise(share_priority = mean(value, na.rm = TRUE)))
-  
-
-list[["Natural_disaster"]] %>% 
-  ggplot(aes(year, share_priority)) +
-  geom_col(fill = "darkgrey",col = "black") +
-  theme_minimal() +
-  
-
-  
-  summarise_at(vars(shocks),cond_mean) %>%
-  
-  
-  
-
 get_first_priority=function(mydata,shocks,lowerbound=0,path=NULL){
   #' @title plot time series with first priority
   #' @description ggplot figure showing the first priority for 
