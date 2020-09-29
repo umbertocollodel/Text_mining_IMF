@@ -30,14 +30,10 @@ duration_table=get_duration(mydata,shocks)
 
 avg_dur=duration_table %>%
   group_by(shocks) %>%
-  summarize(mean=mean(duration,na.rm=T) %>% round(.,2),
-            min=min(duration,na.rm=T) %>% round(.,2),
-            p25=quantile(duration,0.25,na.rm=T) %>% round(.,2),
-            median=quantile(duration,0.5,na.rm=T) %>% round(.,2),
-            p75=quantile(duration,0.75,na.rm=T) %>% round(.,2),
-            p95=quantile(duration,0.95,na.rm=T) %>% round(.,2),
-            max=max(duration,na.rm=T) %>% round(.,2)) %>%
-    arrange(-mean) %>% filter(!is.na(shocks)) %>%
+  summarize(Mean=mean(duration,na.rm=T) %>% round(.,2),
+            P75=quantile(duration,0.75,na.rm=T) %>% round(.,2),
+            P95=quantile(duration,0.95,na.rm=T) %>% round(.,2)) %>%
+    arrange(-Mean) %>% filter(!is.na(shocks)) %>%
   mutate(shocks=ifelse(shocks=="Balance_payment_crisis","B.o.P.",shocks),
          shocks=ifelse(shocks=="World_outcomes","World",shocks),
          shocks=ifelse(shocks=="Sovereign_default","Sovereign",shocks),
@@ -47,7 +43,8 @@ avg_dur=duration_table %>%
          shocks=ifelse(shocks=="Severe_recession","Eco. recession",shocks),
          shocks=gsub("_","",shocks),
          shocks=gsub("crisis","",shocks)
-         ) %>% dplyr::select(-min)
+         ) %>% 
+  rename(Category = shocks)
   
 stargazer::stargazer(title="Persistence: summary table"
                      , avg_dur
