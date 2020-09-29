@@ -80,8 +80,8 @@ ctries=ctry_groups %>% filter(Income_group %in% c(" Low income"," Lower middle i
 get_duration_fig(mydata %>% filter(ISO3_Code %in% ctries$iso3c),shocks=shocks,
                  path=paste0(path_data_directory,"/output/figures/Duration/LowIncome"))
 
-footnote=c("Red dot denote the duration in years of each crisis measure as the number of consecutive years with 
-stricly positive tf.idf. horizontal lines denote the 25 percentile and 95 percentile of the duration of each crisis.")
+footnote=c("The red dot denotes the average duration in years of each crisis, measured as the number of consecutive years with 
+strictly positive term-frequency. The horizontal lines denote, respectively, the 25th percentile and 95th percentile of the distribution.")
 
 cat(footnote,file=paste0(path_data_directory,"/output/figures/Duration/Duration_shock_footnote.tex"))
 
