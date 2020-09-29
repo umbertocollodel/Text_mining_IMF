@@ -34,7 +34,7 @@ get_probability(mydata,shocks,period_range=c(1960,2020),path=paste0(path_data_di
 
 footnote=c("Grey bars denote the unconditional frequencies of the occurence of crises. Formally, it is the proportion of periods
            with strictly positive term-frequencies. Panel (a) shows the heterogeneity of occurrence among the entire set of crises over the 
-           entire period. The occurrence of event is also highly heterogeneous across decades with lower probability for all crises
+           entire period. The occurrence of events is also highly heterogeneous across decades with lower probability for all crises
            during the period 1960-1980 and comparable probabilities during 1980-2000 and 2000-2020 altough the ranking is different.
            The main trend is the large increase in the probability of financial related crises that rank in the upper part of the graph for the recent period.")
 
@@ -56,10 +56,10 @@ ctries=ctry_groups %>% filter(Income_group %in% c(" Low income"," Lower middle i
 get_probability(mydata %>% filter(ISO3_Code %in% ctries$iso3c),
               shocks,period_range=c(1960,2020),path=paste0(path_data_directory,"/output/figures/Probability/LowIncome"))
 
-footnote=c("Grey bars denote the unconditional frequencies of the occurence of shocks. Formally it is the proportion of periods
-           with strictly positive tf.idf. Important differences across income groups can be observed with economic slowdowns,
-           inflations, public debt concerns and financial vulnerabilities as main concerns for high income countries. While Sovereign
-           default, natural disasters, inflation and economic slowdowns are the more likely crisis hiting middle and low income countries
-    ")
+footnote=c("Grey bars denote the unconditional frequencies of the occurrence of crises. Formally, it is the proportion of periods
+           with strictly positive term-frequency. Economic slowdowns,
+           inflation, public debt and financial vulnerabilities are the most frequent events for high income countries. 
+           For lower income groups the ranking is similar, with the entrance, however, of natural disasters.") 
+    
 
 cat(footnote,file=paste0(path_data_directory,"/output/figures/Probability/All/Probability_shock_Incomegroups_footnote.tex"))
