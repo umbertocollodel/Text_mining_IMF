@@ -32,7 +32,7 @@ get_probability(mydata,shocks,period_range=c(1980,2000),path=paste0(path_data_di
 get_probability(mydata,shocks,period_range=c(2000,2020),path=paste0(path_data_directory,"/output/figures/Probability/All"))
 get_probability(mydata,shocks,period_range=c(1960,2020),path=paste0(path_data_directory,"/output/figures/Probability/All"))
 
-footnote=c("Grey bars denote the unconditional frequencies of the occurence of crises. Formally, it is the proportion of periods
+footnote=c("The grey bars denote the unconditional frequencies of the occurence of crises. Formally, it is the proportion of periods
            with strictly positive term-frequencies. Panel (a) shows the heterogeneity of occurrence among the entire set of crises over the 
            entire period. The occurrence of events is also highly heterogeneous across decades with lower probability for all crises
            during the period 1960-1980 and comparable probabilities during 1980-2000 and 2000-2020 altough the ranking is different.
@@ -56,7 +56,7 @@ ctries=ctry_groups %>% filter(Income_group %in% c(" Low income"," Lower middle i
 get_probability(mydata %>% filter(ISO3_Code %in% ctries$iso3c),
               shocks,period_range=c(1960,2020),path=paste0(path_data_directory,"/output/figures/Probability/LowIncome"))
 
-footnote=c("Grey bars denote the unconditional frequencies of the occurrence of crises. Formally, it is the proportion of periods
+footnote=c("The grey bars denote the unconditional frequencies of the occurrence of crises. Formally, it is the proportion of periods
            with strictly positive term-frequency. Economic slowdowns,
            inflation, public debt and financial vulnerabilities are the most frequent events for high income countries. 
            For lower income groups the ranking is similar, with the entrance, however, of natural disasters.") 
