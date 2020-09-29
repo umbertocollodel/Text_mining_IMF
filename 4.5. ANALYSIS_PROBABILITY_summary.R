@@ -32,12 +32,11 @@ get_probability(mydata,shocks,period_range=c(1980,2000),path=paste0(path_data_di
 get_probability(mydata,shocks,period_range=c(2000,2020),path=paste0(path_data_directory,"/output/figures/Probability/All"))
 get_probability(mydata,shocks,period_range=c(1960,2020),path=paste0(path_data_directory,"/output/figures/Probability/All"))
 
-footnote=c("Grey bars denote the unconditional frequencies of the occurence of crises. Formally it is the proportion of periods
-           with strictly positive term-frequencies. Panel (a) shows the heterogeneity of occurence among the entire set of crisis for the 
-           entire period. The occurence of event is also high heterogeneous across decades with much lower probability for all crisis
+footnote=c("Grey bars denote the unconditional frequencies of the occurence of crises. Formally, it is the proportion of periods
+           with strictly positive term-frequencies. Panel (a) shows the heterogeneity of occurrence among the entire set of crises over the 
+           entire period. The occurrence of event is also highly heterogeneous across decades with lower probability for all crises
            during the period 1960-1980 and comparable probabilities during 1980-2000 and 2000-2020 altough the ranking is different.
-           Among the main evolution we observe the large increase in the probability of financial related crisis that ranks in the 
-           top concerns in the recent period with a probability of more than 50 percent.")
+           The main trend is the large increase in the probability of financial related crises that rank in the upper part of the graph in the recent period.")
 
 cat(footnote,file=paste0(path_data_directory,"/output/figures/Probability/All/Probability_shock_footnote.tex"))
 
