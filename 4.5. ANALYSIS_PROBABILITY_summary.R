@@ -36,7 +36,7 @@ footnote=c("Grey bars denote the unconditional frequencies of the occurence of c
            with strictly positive term-frequencies. Panel (a) shows the heterogeneity of occurrence among the entire set of crises over the 
            entire period. The occurrence of event is also highly heterogeneous across decades with lower probability for all crises
            during the period 1960-1980 and comparable probabilities during 1980-2000 and 2000-2020 altough the ranking is different.
-           The main trend is the large increase in the probability of financial related crises that rank in the upper part of the graph in the recent period.")
+           The main trend is the large increase in the probability of financial related crises that rank in the upper part of the graph for the recent period.")
 
 cat(footnote,file=paste0(path_data_directory,"/output/figures/Probability/All/Probability_shock_footnote.tex"))
 
