@@ -32,7 +32,7 @@ get_probability(mydata,shocks,period_range=c(1980,2000),path=paste0(path_data_di
 get_probability(mydata,shocks,period_range=c(2000,2020),path=paste0(path_data_directory,"/output/figures/Probability/All"))
 get_probability(mydata,shocks,period_range=c(1960,2020),path=paste0(path_data_directory,"/output/figures/Probability/All"))
 
-footnote=c("Grey bars denote the unconditional frequencies of the occurence of shocks. Formally it is the proportion of periods
+footnote=c("Grey bars denote the unconditional frequencies of the occurence of crises. Formally it is the proportion of periods
            with strictly positive term-frequencies. Panel (a) shows the heterogeneity of occurence among the entire set of crisis for the 
            entire period. The occurence of event is also high heterogeneous across decades with much lower probability for all crisis
            during the period 1960-1980 and comparable probabilities during 1980-2000 and 2000-2020 altough the ranking is different.
