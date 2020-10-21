@@ -270,3 +270,22 @@ stargazer::stargazer(title="Typology of indexes"
 
 
 
+
+# Table with division by income group: ----
+
+mydata %>% 
+  merge(ctry_groups) %>% 
+  mutate(Income_group = as.character(Income_group)) %>% 
+  mutate(Income_group = case_when(Income_group == " Lower middle income" ~ " Low income",
+         T ~ Income_group)) %>% 
+  mutate(year_correct = year(period)) %>% 
+  group_by(iso3c) %>%
+  filter(year_correct == min(year_correct)) %>% 
+  ungroup() %>% 
+  group_by(Income_group) %>% 
+  summarise(`Avg. start year` = round(mean(year_correct),0)) %>% 
+  rename(`Income Group` = Income_group) %>% 
+  stargazer::stargazer(summary = F,
+                       rownames = F,
+                       out = "../Betin_Collodel/2. Text mining IMF_data/output/tables/Corpus/ctry_detail_by_income_group.tex")
+  
