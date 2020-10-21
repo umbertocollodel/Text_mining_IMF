@@ -71,14 +71,14 @@ get_severity_typology=function(mydata,ctries,shocks,path=NULL){
   severity_all=severity_all %>% left_join(priority_table,by="crisis")
   #severity_all=severity_all%>% filter(crisis!="Sovereign")
   
-  severity_all$typology=c("ETPC","RWTC","ETPC","RWTC","ETPC","ETPC","ETC","TTID","ETC","TTID","TTID",
-                          "ETC","TTID","RWTC","ETC","ETPC","RWTC","TTID","TTID","TTID")
+  severity_all$typology=c("Paralyzers","Hotspots","Paralyzers","Spreaders","Paralyzers","Paralyzers","Spreaders","Sparks","Spreaders","Spreaders","Sparks",
+                          "Spreaders","Sparks","Hotspots","Spreaders","Paralyzers","Hotspots","Sparks","Sparks","Spreaders")
   
   panel_A=ggplot(data=severity_all)+
     geom_smooth(method="lm",aes(x=log(priority*100+1),y=probability),se=F,color="darkgrey",size=0.3)+
     geom_text_repel(aes(x=log(priority*100+1),y=probability,label=crisis,color=typology))+
     theme_bw()+
-    scale_color_manual(values=c("darkblue","darkgreen","darkred","orange"))+
+    scale_color_manual(values=c("darkred","darkgreen","orange","darkblue"))+
     #scale_x_log10()+
     labs(y="probability",
          x="priority",
@@ -105,7 +105,7 @@ get_severity_typology=function(mydata,ctries,shocks,path=NULL){
     theme_bw()+
     scale_color_manual(values=c("darkblue","darkgreen","darkred","orange"))+
     labs(y="Probability",
-         x="P.95 priority",
+         x="log P.95 priority",
          title=NULL)+
     #lims(y=c(1,5))+
     #lims(x=c(0,0.65))+
@@ -132,7 +132,7 @@ get_severity_typology=function(mydata,ctries,shocks,path=NULL){
     scale_color_manual(values=c("darkblue","darkgreen","darkred","orange"))+
     scale_x_log10()+
     labs(y="Complexity",
-         x="P.95 priority",
+         x="log P.95 priority",
          title=NULL)+
     #lims(y=c(0.05,0.25))+
     #lims(x=c(-0.1,0.2))+
@@ -155,7 +155,7 @@ get_severity_typology=function(mydata,ctries,shocks,path=NULL){
     theme_bw()+
     scale_color_manual(values=c("darkblue","darkgreen","darkred","orange"))+
     labs(y="Persistence", 
-         x="P.95 priority",
+         x="log P.95 priority",
          title=NULL)+
     lims(x=c(1,4.5))+
     theme(panel.grid.minor = element_blank(),
@@ -176,6 +176,17 @@ get_severity_typology=function(mydata,ctries,shocks,path=NULL){
 #Total
 ctries=mydata$ISO3_Code %>% unique()
 severity_all=get_severity_typology(mydata, ctries,shocks)
+severity_all$Panel_B$data
+
+severity_all$Panel_A
+ggsave(paste0(path_data_directory,"/output/figures/Severity Typology/priority_probability.png"))
+severity_all$Panel_B
+ggsave(paste0(path_data_directory,"/output/figures/Severity Typology/p.95_probability.png"))
+severity_all$Panel_C
+ggsave(paste0(path_data_directory,"/output/figures/Severity Typology/p.95_complexity.png"))
+severity_all$Panel_D
+ggsave(paste0(path_data_directory,"/output/figures/Severity Typology/p95_persistence.png"))
+
 
 
 footnote=c("RWTC (Remedy Worst Than Curse) crisis refer to particular severe events with high policy trade offs and
@@ -193,7 +204,15 @@ ctries=ctry_groups %>% filter(Income_group==" High income" & !iso3c %in% c("ATG"
 ctries=ctries$iso3c
 
 severity_HighIncome=get_severity_typology(mydata, ctries,shocks)
+
+severity_HighIncome$Panel_A
+ggsave(paste0(path_data_directory,"/output/figures/Severity Typology/priority_probability_HighIncome.png"))
 severity_HighIncome$Panel_B
+ggsave(paste0(path_data_directory,"/output/figures/Severity Typology/p.95_probability_HighIncome.png"))
+severity_HighIncome$Panel_C
+ggsave(paste0(path_data_directory,"/output/figures/Severity Typology/p.95_complexity_HighIncome.png"))
+severity_HighIncome$Panel_D
+ggsave(paste0(path_data_directory,"/output/figures/Severity Typology/p95_persistence_HighIncome.png"))
 
 
 # Middle Income
@@ -202,8 +221,10 @@ ctries=ctry_groups %>% filter(Income_group==" Upper middle income")
 ctries=ctries$iso3c
 severity_MiddleIncome=get_severity_typology(mydata, ctries,shocks)
 
+severity_MiddleIncome$Panel_A
 severity_MiddleIncome$Panel_B
-
+severity_MiddleIncome$Panel_C
+severity_MiddleIncome$Panel_D
 # Low Income
 
 
@@ -213,13 +234,10 @@ severity_LowIncome=get_severity_typology(mydata, ctries,shocks)
 
 severity_LowIncome$Panel_B
 
-
-
 #high income
-
 ctries=ctry_groups %>% filter(Income_group==" High income")
 ctries=ctries$iso3c
-severity_HighIncome=severity %>% filter(ISO3_Code %in% ctries) %>%
+severity_HighIncome=severity_all %>% filter(ISO3_Code %in% ctries) %>%
    ungroup() %>% group_by(shocks) %>% 
   summarise_at(vars(probability:area),mean) %>% ungroup()%>%
   mutate(probability=round(probability,2),
@@ -482,6 +500,10 @@ cat(footnote,file=paste0(path_data_directory,"/output/figures/Severity/severity_
 
 
 
+
+
+
+
 # very high proba countries
 
 excl= c("ATG","BHS","BHR","BRB","BRN","KWT","MAC","MLT","OMN","PLW","PAN","PRI","QAT","SMR","SAU","SYC","SGP","KNA","TTO","ARE")
@@ -504,6 +526,9 @@ top_events(severity %>% filter(ISO3_Code %in% ctries),"probability",percentile=0
 top_events(severity %>% filter(ISO3_Code %in% ctries),"persistence",percentile=0.8,path=paste0(path_data_directory,"/output/figures/severity/","persistence","_worst_episodes_HighIncome.tex"))
 top_events(severity %>% filter(ISO3_Code %in% ctries),"priority",percentile=0.8,path=paste0(path_data_directory,"/output/figures/severity/","priority","_worst_episodes_HighIncome.tex"))
 top_events(severity %>% filter(ISO3_Code %in% ctries),"complexity",percentile=0.8,path=paste0(path_data_directory,"/output/figures/severity/","complexity","_worst_episodes_HighIncome.tex"))
+
+
+
 
 
 
@@ -538,42 +563,42 @@ severity_summary_table=function(mydata,ctry="FRA",shocks){
 
   return(probability)
 }
-  cond_mean=function(x){
-    mean(ifelse(x<lowerbound,NA,x),na.rm=T)
-  }
-  
-  intensity=mydata %>% dplyr::select(year,ISO3_Code,shocks) %>%
-    filter(ISO3_Code%in%ctry& year>=1945) %>% ungroup() %>%
-    summarise_at(vars(shocks),cond_mean) %>%
-    rename_all(paste0,"_intensity") %>% 
-    mutate(iso3c = ctry) %>% 
-    select(iso3c, everything())
-
-  
-  duration=get_duration(mydata %>% filter(ISO3_Code%in%ctry),shocks)
-  duration=duration %>%
-    group_by(shocks,statistic) %>%
-    summarize(mean=mean(stat,na.rm=T)) %>%
-    spread(key=statistic,value=mean) %>%
-    ungroup()
-  
-  colnames(duration)=c("shocks","p25","p75","max","mean","median","min")
-  
-  duration=duration%>% 
-    ungroup() %>%
-    dplyr::select(shocks,duration=mean) %>%
-    mutate(shocks=str_remove_all(shocks," ")) %>% 
-    spread(shocks, duration) %>%
-    rename_all(paste0, "_duration") %>% 
-    mutate(iso3c = ctry) %>% 
-    select(iso3c, everything())
-    
-  
-summary <- list(probability, intensity, duration) %>% 
-  reduce(merge, by = "iso3c")
-
-  
-}
+#   cond_mean=function(x){
+#     mean(ifelse(x<lowerbound,NA,x),na.rm=T)
+#   }
+#   
+#   intensity=mydata %>% dplyr::select(year,ISO3_Code,shocks) %>%
+#     filter(ISO3_Code%in%ctry& year>=1945) %>% ungroup() %>%
+#     summarise_at(vars(shocks),cond_mean) %>%
+#     rename_all(paste0,"_intensity") %>% 
+#     mutate(iso3c = ctry) %>% 
+#     select(iso3c, everything())
+# 
+#   
+#   duration=get_duration(mydata %>% filter(ISO3_Code%in%ctry),shocks)
+#   duration=duration %>%
+#     group_by(shocks,statistic) %>%
+#     summarize(mean=mean(stat,na.rm=T)) %>%
+#     spread(key=statistic,value=mean) %>%
+#     ungroup()
+#   
+#   colnames(duration)=c("shocks","p25","p75","max","mean","median","min")
+#   
+#   duration=duration%>% 
+#     ungroup() %>%
+#     dplyr::select(shocks,duration=mean) %>%
+#     mutate(shocks=str_remove_all(shocks," ")) %>% 
+#     spread(shocks, duration) %>%
+#     rename_all(paste0, "_duration") %>% 
+#     mutate(iso3c = ctry) %>% 
+#     select(iso3c, everything())
+#     
+#   
+# summary <- list(probability, intensity, duration) %>% 
+#   reduce(merge, by = "iso3c")
+# 
+#   
+# }
 
 
 # K-means : -----

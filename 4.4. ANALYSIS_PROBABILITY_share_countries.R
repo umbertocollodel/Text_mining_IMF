@@ -220,3 +220,5 @@ table_income_group %>%
   stargazer(summary = F, rownames = F, out = paste0(path_data_directory,"/output/tables/Probability/max_share_detail.tex"))
   
 
+
+

@@ -22,7 +22,7 @@ devtools::install_github("manuelbetin/PICindex",auth_token="7502b84abd98de5cb4ce
 packages <- c("dplyr","ggplot2","plotly","pdftools","lubridate",'tictoc'
               ,"rio","tidytext","stringr","stringi","tidyr","network","GGally"
               ,"forcats", "TextMiningCrisis", "SetUpProject", "PICindex","gridExtra"
-              ,"ggrepel","igraph","gganimate","networkD3","tidyselect"
+              ,"ggrepel","igraph","gganimate","tidyselect","purrr"
 )
 
 ## load common packages
@@ -35,7 +35,7 @@ output[["Session_info"]]=sessionInfo()
 # Import data ####
 
 #Complete information combining tf, url metadata and quantititve measures
-mydata=rio::import("../Betin_Collodel/2. Text mining IMF_data/datasets/tagged docs/tf_idf_database.RData")
+mydata=rio::import("../Betin_Collodel/2. Text mining IMF_data/datasets/tagged docs/tf_idf.RData")
 
 ctry_classif=SetUpProject::ctry_classif()%>% rename(iso3c=ISO3_Code)
 ctry_groups=SetUpProject::ctry_groups()%>% rename(iso3c=ISO3_Code)
@@ -45,7 +45,6 @@ shocks=c("Soft_recession","Sovereign_default","Natural_disaster",'Commodity_cris
          'Financial_crisis','Inflation_crisis','Trade_crisis','World_outcomes','Contagion',
          'Expectations','Balance_payment_crisis',"Epidemics","Migration","Housing_crisis",
          'Severe_recession',"Currency_crisis_severe","Wars","Social_crisis")
-
 
 source("4.0 ANALYSIS_functions.R")
 

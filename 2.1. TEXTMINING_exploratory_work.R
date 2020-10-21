@@ -16,6 +16,13 @@ library(pdftools)
 file <- pdf_text("~/Desktop/CHN_2006-07-28_Article IV.pdf") %>% 
   str_split("\n") 
 
+
+
+# files=load("../Betin_Collodel/2. Text mining IMF_data/datasets/corpus/corpus.RData")
+# 
+# file=x[[57]]$`FRA_2010-07-23_Article IV`
+# export(tibble(file),"FRA2010.txt")
+
 # Collapse the corpus:
 
 file_collapsed <- file %>%
@@ -25,6 +32,18 @@ file_collapsed <- file %>%
 # Tokenisation:
 
 # Without addititional criterion
+
+# keywords=c("unemployment")
+# 
+# list(sentence = tibble(doc = file_collapsed) %>% 
+#        unnest_tokens(word, doc, token = "sentences") %>% 
+#        filter(grepl(paste(keywords,collapse = "|"),word)) %>% 
+#        data.frame(),
+#      count = tibble(doc = file_collapsed) %>% 
+#        unnest_tokens(word, doc, token = "sentences") %>% 
+#        filter(grepl(paste(keywords,collapse = "|"),word)) %>% 
+#        count() 
+# )
 
 list(sentence = tibble(doc = file_collapsed) %>% 
   unnest_tokens(word, doc, token = "sentences") %>% 

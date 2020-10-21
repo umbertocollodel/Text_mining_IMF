@@ -741,3 +741,222 @@ top_events=function(severity,var,percentile=0.95,direction="higher",path=NULL){
 }
 
 
+## 4.11 ANALYSIS_ARCHITECTURE
+
+get_architecture=function(mydata,shocks,ctries="MEX",start_year=1980,end_year=1983,n_top_G7=5){
+  
+  crisis=colnames(mydata)[!colnames(mydata) %in% c("ISO3_Code","year","Period")]
+  typology=c("Sparks","Hotspots","Sparks","Paralyzers","Hotspots","Hotspots","Paralyzers","Spreaders","Paralyzers",
+             "Spreaders","Spreaders","Sparks","Spreaders","Sparks","Spreaders","Paralyzers","Paralyzers","Spreaders","Hotspots",
+             "Sparks","Sparks")
+  
+  Typology_crisis=cbind(crisis,typology)
+  Typology_crisis=data.frame(Typology_crisis)
+  
+  lowerbound=0
+  cond_mean=function(x){
+    mean(ifelse(x<lowerbound,NA,x),na.rm=T)
+  }
+  centers=mydata %>% dplyr::select(year,ISO3_Code,shocks) %>%
+    filter(year>=1945) %>% ungroup() %>%
+    group_by(ISO3_Code) %>%
+    summarise_at(vars(shocks),cond_mean) %>%
+    gather(key="shocks",value=value,-"ISO3_Code")%>% dplyr::rename(intensity=value) %>%
+    group_by(ISO3_Code) %>%
+    mutate(intensity=as.numeric(intensity),
+           priority=intensity/sum(intensity,na.rm=T)) %>% dplyr::select(-intensity)%>%
+    group_by(shocks) %>%
+    mutate(priority_rank=rank(priority)/max(rank(priority)))
+  
+  thresholds=centers%>% ungroup() %>%
+    filter(priority_rank>0.2) %>% filter(priority_rank==min(priority_rank)) %>% dplyr::select(-c(ISO3_Code,priority_rank)) %>%
+    rename(threshold=priority,crisis=shocks)
+  
+  G7=mydata %>% dplyr::select(year,ISO3_Code,shocks) %>%
+    filter(year>=start_year & year <=end_year & ISO3_Code %in% 
+             c("USA","GBR","DEU","JPN","FRA","ITA","CAN")) %>% ungroup() %>%
+    group_by(ISO3_Code) %>%
+    summarise_at(vars(shocks),cond_mean) %>%
+    gather(key="shocks",value=value,-"ISO3_Code")%>% dplyr::rename(intensity=value) %>%
+    group_by(ISO3_Code) %>%
+    mutate(intensity=as.numeric(intensity),
+           priority=intensity/sum(intensity,na.rm=T)) %>% dplyr::select(-intensity)%>%
+    group_by(shocks) %>%
+    summarize(G7=mean(priority,na.rm=T)) %>% arrange(-G7)
+  
+  G7=G7[1:n_top_G7,] %>% summarize(G7=paste0(shocks," (",round(G7,2),")",collapse = ","))
+  G7=cbind("G7","","top priorities",G7)
+  colnames(G7)=c("ISO3_Code","n","typology","Events")
+  
+  contagion=mydata %>% dplyr::select(year,ISO3_Code,shocks) %>%
+    filter(year>=start_year & year <=end_year) %>%
+    group_by(ISO3_Code) %>%
+    summarise_at(vars(shocks),cond_mean) %>%
+    gather(key="shocks",value=value,-"ISO3_Code")%>% dplyr::rename(intensity=value) %>%
+    group_by(ISO3_Code) %>%
+    mutate(intensity=as.numeric(intensity),
+           priority=intensity/sum(intensity,na.rm=T)) %>% dplyr::select(-intensity)%>% rename(crisis=shocks) %>%
+    left_join(x=thresholds,by=c("crisis")) %>%
+    filter(priority>threshold) %>% filter(crisis %in% c("World_outcomes","Contagion","Expectations")) %>%
+    group_by(crisis) %>% summarize(n=n(),
+                                   ctries=paste0(ISO3_Code,collapse=","))
+  
+  contagion=cbind("",contagion)
+  colnames(contagion)=c("ISO3_Code","typology","n","Events")
+  
+  mycomplexity=lapply(ctry,function(x){
+    mycomplexity=mydata  %>%
+      filter(ISO3_Code%in%x& year>=1945) %>%
+      ungroup() %>%
+      dplyr::select(shocks) %>% na.omit() %>%
+      cor() %>% data.frame()
+    mycomplexity[is.na(mycomplexity)]=0
+    mycomplexity%>% summarise_at(vars(shocks),mean,na.rm=T) %>%
+      gather(key="shocks",value="complexity") %>%
+      mutate(ISO3_Code=x)
+  })
+  mycomplexity=do.call(rbind,mycomplexity)
+  mycomplexity=mycomplexity %>% dplyr::select(-ISO3_Code,crisis="shocks") 
+    #left_join(Typology_crisis,by=c("crisis"))
+  
+  mydata %>% dplyr::select(year,Period,ISO3_Code,shocks) %>% filter(ISO3_Code %in% c(ctries,"USA") & year>=start_year & year <=end_year) %>%
+    gather(key="crisis","value",-c("ISO3_Code","year","Period")) %>%
+    group_by(ISO3_Code,year) %>%
+    mutate(value=value/sum(value,na.rm=T)) %>% ungroup() %>% left_join(x=thresholds,by=c("crisis")) %>%
+    filter(value>threshold) %>% arrange(Period) %>%
+    group_by(ISO3_Code,crisis) %>%
+    summarize(Events=paste0(paste0(year,"(",round(value,2),")"),collapse=","),
+              n=n()) %>% 
+    left_join(Typology_crisis,by=c("crisis")) %>% left_join(mycomplexity,by=c("crisis")) %>%
+    group_by(ISO3_Code,typology) %>%
+    summarize(n=sum(n),
+              Events=paste0(paste0(crisis," (","Complex ",round(complexity,2),": ",Events,")"),collapse = ",")) %>% ungroup() %>%
+    mutate(typology=as.character(typology)) %>% rbind(G7,contagion)
+}
+
+get_architecture_fig=function(mydata,shocks,ctry="MEX",start_year=1980,end_year=1983,lowerbound=0){
+  #' @title summary table of severity measures
+  #' @describeIn Table summarizing probability, intensity
+  #' duration and complexity
+  #' @param mydata the tf.idf database 
+  #' @param ctry the country to which display the figure
+  #' @param shocks a vector with the name of the shock of interest (from lexicon() 
+  #' categories)
+  #' @return ggplot object
+  #' @author Manuel Betin
+  #' @export
+  
+  cond_mean=function(x){
+    mean(ifelse(x<lowerbound,NA,x),na.rm=T)
+  }
+  
+  intensity=mydata %>% dplyr::select(year,ISO3_Code,shocks) %>%
+    filter(ISO3_Code%in%ctry& year>=start_year & year <=end_year) %>% ungroup() %>%
+    group_by(ISO3_Code,year) %>%
+    summarise_at(vars(shocks),cond_mean) %>%
+    gather(key="shocks",value=value,-"ISO3_Code",-year)%>% dplyr::rename(intensity=value) %>%
+    group_by(ISO3_Code) %>%
+    mutate(intensity=as.numeric(intensity),
+           priority=intensity/sum(intensity,na.rm=T))# %>% dplyr::select(-intensity)
+  
+  
+  mycomplexity=lapply(ctry,function(x){
+    mycomplexity=mydata  %>%
+      filter(ISO3_Code%in%x& year>=1945) %>%
+      ungroup() %>%
+      dplyr::select(shocks) %>% na.omit() %>%
+      cor() %>% data.frame()
+    mycomplexity[is.na(mycomplexity)]=0
+    mycomplexity%>% summarise_at(vars(shocks),mean,na.rm=T) %>%
+      gather(key="shocks",value="complexity") %>%
+      mutate(ISO3_Code=x)
+  })
+  mycomplexity=do.call(rbind,mycomplexity)
+  
+  summary_crisis=intensity %>% left_join(mycomplexity,by=c("ISO3_Code","shocks"))
+  summary_crisis[is.na(summary_crisis)]=0
+  
+  summary_crisis=summary_crisis %>%
+    mutate(shocks=ifelse(shocks=="Balance_payment_crisis","BP.",shocks),
+           shocks=ifelse(shocks=="World_outcomes","W",shocks),
+           shocks=ifelse(shocks=="Sovereign_default","SD",shocks),
+           shocks=ifelse(shocks=="Natural_disaster","ND.",shocks),
+           shocks=ifelse(shocks=="Currency_crisis_severe","CC",shocks),
+           shocks=ifelse(shocks=="Soft_recession","ES",shocks),
+           shocks=ifelse(shocks=="Severe_recession","ER",shocks),
+           shocks=ifelse(shocks=="Contagion","CO",shocks),
+           shocks=ifelse(shocks=="Banking_crisis","BC",shocks),
+           shocks=ifelse(shocks=="Commodity_crisis","CM",shocks),
+           shocks=ifelse(shocks=="Political_crisis","PO",shocks),
+           shocks=ifelse(shocks=="Expectations","EX",shocks),
+           shocks=ifelse(shocks=="Financial_crisis","FI",shocks),
+           shocks=ifelse(shocks=="Social_crisis","SO",shocks),
+           shocks=ifelse(shocks=="Inflation_crisis","IN",shocks),
+           shocks=ifelse(shocks=="Trade_crisis","TR",shocks),
+           shocks=ifelse(shocks=="Epidemics","EP",shocks),
+           shocks=ifelse(shocks=="Housing_crisis","HC",shocks),
+           shocks=ifelse(shocks=="Migration","MC",shocks),
+           shocks=ifelse(shocks=="Wars","WC",shocks),
+           shocks=gsub("_","",shocks),
+           shocks=gsub("crisis","",shocks)) %>%
+    filter(priority>0) %>% ungroup() %>% group_by(year)%>% mutate(sum_intensity=sum(intensity)) %>%
+    ungroup() %>% mutate(Aggregate.Intensity=ifelse(as.numeric(factor(sum_intensity))==max(as.numeric(factor(sum_intensity))),"solid","dotted"),
+                         alpha=ifelse(Aggregate.Intensity=="Top intensity",1,0.5))
+
+  myfig=function(myyears){
+    ggplot(data=summary_crisis%>%filter(year%in%myyears))+
+      geom_text_repel(aes(x=complexity,y=priority,label=shocks,color=year),size=3)+
+      geom_point(aes(x=complexity,y=priority,group=year),color="grey")+
+      geom_line(aes(x=complexity,y=priority,group=year,color=year,alpha=alpha,linetype=Aggregate.Intensity))+ #,color="grey"
+      scale_alpha_identity()+
+      scale_linetype_identity()+
+      theme_bw()+
+      labs(y="priority",
+           x="complexity",
+           title=NULL)+
+    # lims(x=c(0,1),
+    #         y=c(0,1))+
+      theme(panel.grid.minor = element_blank(),
+            axis.text.x = element_text(size =15,angle=0, hjust =1,vjust =0.5),
+            axis.title.x = element_text(size = 15),
+            axis.title.y = element_text(size=15),
+            axis.text.y = element_text(size=15),
+            plot.title=element_text(face="bold",colour ="black",size=15, hjust =0.5),
+            plot.subtitle =element_text(size =7, hjust = 0.5),
+            legend.title=element_blank(),
+            legend.position="bottom")  
+  }
+  
+  myplots=lapply(start_year:end_year,function(x){
+    myfig(start_year:x)
+  })
+  names(myplots)=start_year:end_year
+  
+  return(myplots)
+}
+
+
+## 4.12 ANALYSIS_CONTAGION
+
+
+get_map_crisis=function(mydata,var,years=2009,threshold=0){
+  
+  documents_ctry <- mydata%>% filter(year %in% years) %>%
+    group_by(ISO3_Code) %>%
+    dplyr::select(ISO3_Code,var)
+  
+  world <-ne_countries(scale = "medium", returnclass = "sf") %>% 
+    rename(ISO3_Code = wb_a3) %>% 
+    left_join(documents_ctry, by = "ISO3_Code")
+  
+  ggplot(data = world) +
+    geom_sf(aes(fill = get(var)),col = "grey") +
+    geom_sf_label(aes(label=ifelse(get(var)>threshold,ISO3_Code,NA)),alpha=0.1)+
+    scale_fill_gradient(low='white', high='red',na.value = "lightgrey",name = var) +
+    theme_minimal() +
+    labs(title=paste0(years),collapse=", ")+
+    theme(legend.title = element_text(size = 15),
+          legend.text = element_text(size = 15))
+}
+
+

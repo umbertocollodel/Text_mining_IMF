@@ -25,7 +25,8 @@ packages <- c("dplyr"
               ,"tidyr"
               , "TextMiningCrisis"
               , "SetUpProject",
-              "forcats"
+              "forcats",
+              "rnaturalearthdata"
               )
 
 ## load common packages

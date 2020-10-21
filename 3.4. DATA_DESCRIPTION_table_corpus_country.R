@@ -32,21 +32,22 @@ rio::import("../Betin_Collodel/2. Text mining IMF_data/datasets/tagged docs/tf_i
 
 # Globe map -----
 
+library("rnaturalearth")
 
-world <- ne_countries(scale = "medium", returnclass = "sf") %>% 
+
+world <-ne_countries(scale = "medium", returnclass = "sf") %>% 
   rename(ISO3_Code = wb_a3) %>% 
-  merge(documents_ctry, by = "ISO3_Code")
+  left_join(documents_ctry, by = "ISO3_Code")
 
 ggplot(data = world) +
   geom_sf(aes(fill = n),col = "black") +
   scale_fill_gradient(low='white', high='green4',name = "Number of documents") +
   theme_minimal() +
+  labs(title=myyear)+
   theme(legend.title = element_text(size = 15),
         legend.text = element_text(size = 15))
   
-
-
-ggsave("../Betin_Collodel/2. Text mining IMF_data/output/figures/Corpus/ctry_detail.png")
+#ggsave("../Betin_Collodel/2. Text mining IMF_data/output/figures/Corpus/ctry_detail.png")
 
  
 

@@ -52,7 +52,7 @@ SetUpProject::load.my.packages(packages)
 
 ## Instructions:
 ## replace 1) and 2)
-apply_tf_on_new_ctry=T
+apply_tf_on_new_ctry=F
 update_tf=F
 
 usb_drive="/Volumes/Elements/IMF documents"
@@ -161,7 +161,7 @@ if(update_tf == T){
 # List of all directories in external drive:
 
 mytfs <- setdiff(dir(usb_drive),c("download_docs.r","urls_Requests_Reviews_articleIV.RData","0. logs","0. Old extraction","tf_idf.RData"))
-ctries
+#ctries
 # Set again the list of categories with only the ones you will update:
 
 # keyword_list = c("Epidemics")
@@ -196,6 +196,20 @@ map(function(x){
                 store_old = T, 
                 store_old_path = paste0(usb_drive,"/0. Old extraction/tf"))
 })
+
+
+keyword_list=c("Fiscal_outcomes")
+x=list("../Betin_Collodel/2. Text mining IMF_data/datasets/tagged docs/tf_idf.RData",
+       "../Betin_Collodel/2. Text mining IMF_data/datasets/corpus/corpus.RData",
+       "../Betin_Collodel/2. Text mining IMF_data/datasets/tagged docs/tf_idf_update.RData",
+        "../Betin_Collodel/2. Text mining IMF_data/datasets/tagged docs/tf_idf_old.RData")
+
+run_tf_update(path_tf_to_update = x[[1]], 
+              corpus_path = x[[2]], 
+              export_path = x[[3]],
+              keyword_list = keyword_list,
+              store_old = T, 
+              store_old_path = x[[4]])
 
 # Write txt file with details of update:
 
