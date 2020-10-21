@@ -1,6 +1,7 @@
 ######## Description: the script generates 
 ######## 1) a histogram with the division of the corpus into two big families, country reports and programs, and granular ranking all in the same facet.
 ######## 2) number of documents for each year, family and type doc
+######## 3) table with average starting year of documents for each income group
 
 # Remove problematic documents:
 
