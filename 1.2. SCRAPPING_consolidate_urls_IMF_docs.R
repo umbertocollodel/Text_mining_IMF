@@ -35,7 +35,7 @@ SetUpProject::load.my.packages(packages)
 #' relevant for the filtering of the relevant documents to be downloaded. This code is 
 #' the first step of the selection of document and could be update or corrected to find
 #' other alternative documents or to make sure some type of documents have not been forgotted
-#' @author Manuel Bétin
+#' @author Manuel B??tin
 #' @return A dataset containing the urls for different categories of documents in
 #' urls_Requests_Reviews_articleIV.RData
 
@@ -78,22 +78,7 @@ find_IMFprograms=function(dt){
     print("please provide a valide database containing at least the columns title and year")
    dt
   }else{
-  dt=dt %>% mutate(type_doc_programs=ifelse(str_detect(title,"request"),"request",NA),
-                   type_doc_programs=ifelse(str_detect(title,'arrangement under the flexible credit line'),"request",type_doc_programs),
-                   #type_doc_programs=ifelse(str_detect(keywords,'requests'),"request",type_doc_programs),
-                   #type_doc_programs=ifelse(str_detect(keywords,'Letters of Intent'),"request",type_doc_programs),
-                   #type_doc_programs=ifelse(str_detect(keywords,'arrangement texts'),"request",type_doc_programs),
-                   type_doc_programs=ifelse(str_detect(title,'letter on economic policy'),"request",type_doc_programs),
-                   type_doc_programs=ifelse( str_detect(title,'stand-by arrangement') & !str_detect(title,'review'),"request",type_doc_programs),
-                   type_doc_programs=ifelse( str_detect(title,'stand-by agreement') & !str_detect(title,'review'),"request",type_doc_programs),
-                   type_doc_programs=ifelse( str_detect(title,'extended arrangement') & (!str_detect(title,'review') | !str_detect(title,'request for modification') | !str_detect(title,'waiver') ),"request",type_doc_programs),
-                   type_doc_programs=ifelse( str_detect(title,'extended fund facility') & (!str_detect(title,'review') | !str_detect(title,'request for modification')),"request",type_doc_programs),
-                   type_doc_programs=ifelse( str_detect(title,'enhanced structural adjustment') & (!str_detect(title,'review') | !str_detect(title,'request for modification')),"request",type_doc_programs),
-                   type_doc_programs=ifelse( str_detect(title,'poverty reduction and growth') & (!str_detect(title,'review') | !str_detect(title,'request for modification')),"request",type_doc_programs),
-                   type_doc_programs=ifelse( str_detect(title,'structural adjustment facility') & (!str_detect(title,'review') | !str_detect(title,'request for modification')),"request",type_doc_programs),
-                   type_doc_programs=ifelse(str_detect(title,'request for increase in quotas'),NA,type_doc_programs),
-                   type_doc_programs=ifelse(str_detect(title,'request for enhanced article iv'),NA,type_doc_programs),
-                   type_doc_programs=ifelse(str_detect(title,'modification'),"modification",type_doc_programs))
+  dt=dt %>% mutate(type_doc_programs=ifelse(str_detect(title,"request"),"request",NA))
   
   # find the number of the review ---------
   dt=dt %>% mutate(Review_number=ifelse(str_detect(title,"review") & str_detect(title,"first"),"review_1",
@@ -102,16 +87,16 @@ find_IMFprograms=function(dt){
                                                       ifelse(str_detect(title,"review") & str_detect(title,"fourth"),"review_4",
                                                              ifelse(str_detect(title,"review") & str_detect(title,"fifth"),"review_5",
                                                                     ifelse(str_detect(title,"review") & str_detect(title,"sixth"),"review_6",
-                                                                           ifelse(str_detect(title,"review") & str_detect(title,"seventh"),"review_8",
-                                                                                  ifelse(str_detect(title,"review") & str_detect(title,"eight"),"review_9",
-                                                                                         ifelse(str_detect(title,"review") & str_detect(title,"ninth"),"review_10",
-                                                                                                ifelse(str_detect(title,"review") & str_detect(title,"tenth"),"review_11",NA)))))))))))
+                                                                           ifelse(str_detect(title,"review") & str_detect(title,"seventh"),"review_7",
+                                                                                  ifelse(str_detect(title,"review") & str_detect(title,"eight"),"review_8",
+                                                                                         ifelse(str_detect(title,"review") & str_detect(title,"ninth"),"review_9",
+                                                                                                ifelse(str_detect(title,"review") & str_detect(title,"tenth"),"review_10",
+                                                                                                       ifelse(str_detect(title, "review") & str_detect(title, "midterm"), "review_midterm", NA))))))))))))
   
 
-  dt=dt %>% mutate(Review_number=ifelse(str_detect(title,"review") & str_detect(title,"midterm"),"review_midterm",Review_number),
-                   Review_number=ifelse(str_detect(title,"review") & str_detect(title,"review") & is.na(Review_number),"review",Review_number),
-                   type_doc_programs=ifelse((!is.na(Review_number) & is.na(type_doc_programs)) | (str_detect(title,"review")),"review",type_doc_programs),
-                   type_doc_programs=ifelse(!is.na(Review_number) & str_detect(title,"request") & !str_detect(title,"waiver"),"request and review",type_doc_programs))
+  dt=dt %>% mutate(Review_number=ifelse(str_detect(title,"review") & is.na(Review_number),"review",Review_number),
+                   type_doc_programs=ifelse(str_detect(title,"review") & !str_detect(title,"request"),"review",type_doc_programs),
+                   type_doc_programs=ifelse(str_detect(title,"review") & str_detect("request"),"request and review",type_doc_programs))
   
   
   # find use of fund ressource -------
