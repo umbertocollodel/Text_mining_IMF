@@ -116,13 +116,10 @@ find_IMFprograms=function(dt){
   
   # find compensatory -------
   
-  dt=dt %>% mutate(type_doc_programs=ifelse(is.na(type_doc_programs) & str_detect(title,"performance criteria"),"performance criteria",type_doc_programs))
   dt=dt %>% mutate(performance_criteria=ifelse(str_detect(title,"performance criteria") | str_detect(title,"performance criterion"),"performance criteria",NA))
   dt=dt %>% mutate(waiver=ifelse(str_detect(title,"waiver"),"waiver",NA))
   dt=dt %>% mutate(modification=ifelse(str_detect(title,"request for modification"),"modification",NA))
-  
-  dt=dt %>% mutate(type_doc_programs=ifelse(str_detect(title,"waiver") & str_detect(title,"performance criteria") & is.na(type_doc_programs),"performance criteria and waiver",type_doc_programs),
-                   type_doc_programs=ifelse(str_detect(title,"waiver") & is.na(type_doc_programs),"waiver",type_doc_programs))
+
   
   dt=dt %>% mutate(type_doc_programs=ifelse(!is.na(type_doc_programs) & (str_detect(title,"purchase transaction")),"purchase transac",type_doc_programs))
   
