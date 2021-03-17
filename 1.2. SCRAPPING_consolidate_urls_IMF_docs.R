@@ -104,8 +104,7 @@ find_IMFprograms=function(dt){
   dt=dt %>% mutate(type_doc_programs=ifelse(is.na(type_doc_programs) & str_detect(title,"use of fund"),"Use fund",type_doc_programs))
   
   # find cancellations -------
-  dt=dt %>% mutate(type_doc_programs=ifelse(str_detect(title,"cancellation"),"cancelation",type_doc_programs),
-                   type_doc_programs=ifelse(str_detect(title,"cancellation") & (str_detect(title,"request") | str_detect(title,"flexible credit line") ),"cancelation and request",type_doc_programs))
+  dt=dt %>% mutate(Cancellation=ifelse(str_detect(title,"cancellation"),"cancellation",NA))
   # find extensions -------
   
   dt=dt %>% mutate(type_doc_programs=ifelse(! is.na(type_doc_programs) & (str_detect(title,"prolongation") | str_detect(title,"extension") | str_detect(title,"lengthening")| str_detect(title,"augmentation")),"extension",type_doc_programs))
