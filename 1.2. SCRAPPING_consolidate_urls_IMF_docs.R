@@ -108,9 +108,8 @@ find_IMFprograms=function(dt){
   
   # find extensions -------
   
-  dt=dt %>% mutate(Extension=ifelse(!is.na(type_doc_programs) & (str_detect(title,"prolongation") | str_detect(title,"extension") | str_detect(title,"lengthening")| str_detect(title,"augmentation")),"extension",NA))
-  dt=dt %>% mutate(type_doc_programs=ifelse(str_detect(title,"request for postponement"),"request for postponement",type_doc_programs))
-  
+  dt=dt %>% mutate(Extension=ifelse(str_detect(title,"prolongation") | str_detect(title,"extension") | str_detect(title,"lengthening") | str_detect(title,"augmentation") | str_detect(title, "postponement"),"extension",NA))
+
   # find requests for technical assistance ----
   
   dt=dt %>% mutate(type_doc_programs=ifelse(str_detect(title,"request for technical assistance"),"request for technical assistance",type_doc_programs))
