@@ -9,8 +9,8 @@ Please cite us if you refer to our paper.
 We scrape the IMF archives to obtain all country reports and program-related documents references. After downloading all documents and applying OCR to them to make them suitable for statistical analysis, we build a dictionary with 20 categories and a list of keywords referring to each one of them. We perform an iterative term-frequency for each category to construct a new database of crises discussion. Finally, we compare the resulting measures with established indicators to validate our approach and study how the correlation of these indicators evolves over time through network analysis. We find that crises have significantly complexified over time.
 
 <p float="left">
-  <img src="https://user-images.githubusercontent.com/33840988/166907404-9dfc2fd4-60ee-481a-a4b7-9661b068fe83.png" width="400" />
-  <img src="https://user-images.githubusercontent.com/33840988/166907413-318e5fb7-e1b3-41eb-a6fb-fc8d7c3b2fb7.png" width="400" /> 
+  <img src="https://user-images.githubusercontent.com/33840988/166907404-9dfc2fd4-60ee-481a-a4b7-9661b068fe83.png" width="300" />
+  <img src="https://user-images.githubusercontent.com/33840988/166907413-318e5fb7-e1b3-41eb-a6fb-fc8d7c3b2fb7.png" width="450" /> 
 </p>
 
 
