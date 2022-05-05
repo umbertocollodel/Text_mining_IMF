@@ -6,7 +6,7 @@
 This repository makes available the code to produce all figures and tables in the paper: Betin, Collodel (2021). ["The Complex Crises Database: 70 Years of Macroeconomic Crises"](https://halshs.archives-ouvertes.fr/halshs-03268889/document).
 Please cite us if you refer to our paper.
 
-We scrape the IMF archives to obtain all country reports and program-related documents references. After downloading all documents and applying OCR to them to make them suitable for statistical analysis, we build a dictionary with 20 categories and a list of keywords referring to each one of them. We perform an iterative term-frequency for each category to construct a new database of crises discussion. Finally, we compare the resulting measures with established indicators to validate our approach and study how the correlation of these indicators evolves over time through network analysis. We find that crises have significantly complexified over time.
+We scrape the IMF archives to obtain all country reports and program-related documents references. After downloading all documents and applying OCR to them to make them suitable for statistical analysis, we build a dictionary with 20 categories and a list of keywords referring to each one of them. We perform an iterative term-frequency for each category to construct a new database of crises discussion. Finally, we compare the resulting measures with established indicators to validate our approach and study how the correlation of these indicators evolves over time through network analysis. We find that crises have significantly complexified over time and that financial nodes became central in the network.
 
 ### Crises complexity from 1950-1970 to 2010-2019
 
